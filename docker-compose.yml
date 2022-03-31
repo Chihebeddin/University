@@ -1,0 +1,47 @@
+version: "3.6"
+
+services:
+  departementdb:
+    container_name: departementdb
+    ports:
+      - 9090:8080
+    image: mysql
+    restart: always
+    volumes:
+      - data_dept:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=departementdb
+      - MYSQL_DATABASE=database
+    networks:
+      mysubnet:
+        aliases:
+        - departement-db
+  departementapp:
+    container_name: departementapp
+    build: .
+    image: deptimage
+    ports:
+     - 9095:9095
+    environment:
+      - SPRING_DATASOURCE_URL= jdbc:mysql://departementdb:3306/database?autoReconnect=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=departementdb
+      - SPRING_DATASOURCE_PASSWORD=departementdb
+      - PORTF= 9095
+
+      #SPRING_DATASOURCE_URL: jdbc:mysql://departementdb:3306/database?autoReconnect=true&useSSL=false
+      #PORTF: 9095
+
+    networks:
+      mysubnet:
+        aliases:
+        - departement-app
+    depends_on:
+     - departementdb
+networks:
+  mysubnet:
+    external: false
+volumes:
+  data_dept:
+    external: false
+  
+    
